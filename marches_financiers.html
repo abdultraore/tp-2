@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Marchés Financiers Efficients</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --primary-color: #0f2027;
+            --secondary-color: #203a43;
+            --accent-color: #2c5364;
+            --text-color: #e0e0e0;
+            --highlight: #d4af37;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Page de garde */
+        #cover-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color));
+            position: relative;
+            z-index: 10;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        .cover-content {
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            max-width: 800px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--highlight);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+        }
+
+        .btn-enter {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: transparent;
+            border: 2px solid var(--highlight);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-enter:hover {
+            background-color: var(--highlight);
+            color: var(--primary-color);
+            box-shadow: 0 0 15px var(--highlight);
+            transform: translateY(-3px);
+        }
+
+        /* Particles effect background for cover */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            display: block;
+            pointer-events: none;
+            width: 5px;
+            height: 5px;
+            background-color: var(--highlight);
+            box-shadow: 0 0 10px var(--highlight);
+            border-radius: 50%;
+            animation: float 5s infinite ease-in-out;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) scale(0); opacity: 0; }
+        }
+
+        /* Page de contenu */
+        #content-page {
+            display: none;
+            padding: 4rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        #content-page.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--highlight);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--highlight);
+            font-size: 2rem;
+            margin-top: 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+        }
+
+        p, li {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #cccccc;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+        }
+
+        ul li::before {
+            content: "•";
+            color: var(--highlight);
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        .highlight-text {
+            color: var(--highlight);
+            font-weight: 600;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--highlight);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Page de garde -->
+    <div id="cover-page">
+        <div class="particles" id="particles"></div>
+        <div class="cover-content">
+            <h1>Les Marchés Financiers Efficients</h1>
+            <p class="subtitle">Une exploration entre théorie néoclassique et réalité des marchés.</p>
+            <button class="btn-enter" onclick="enterSite()">Découvrir</button>
+        </div>
+    </div>
+
+    <!-- Page de contenu -->
+    <div id="content-page">
+
+        <div class="section">
+            <h2>I. L'accroche : Le paradoxe du Nobel 2013</h2>
+            <p><span class="highlight-text">Le fait surprenant :</span> Eugène Fama (pro-efficience) et Robert Shiller (anti-efficience) reçoivent le Prix Nobel d'économie la même année.</p>
+            <p><span class="highlight-text">La problématique :</span> Comment deux visions opposées peuvent-elles être récompensées simultanément?</p>
+            <p><span class="highlight-text">L'idée clé :</span> Tout dépend de la définition que l'on donne à l'« efficience ».</p>
+        </div>
+
+        <div class="section">
+            <h2>II. Définir l'efficience : Quel est l'objectif ?</h2>
+            <p><span class="highlight-text">Vision intuitive :</span> Un marché efficient est un marché qui « fait bien son travail ».</p>
+            <p><span class="highlight-text">Le rôle du marché :</span> Servir d'intermédiaire pour allouer l'épargne vers ceux qui ont besoin de financement.</p>
+            <p><span class="highlight-text">La nécessité d'un objectif :</span> Pour tester l'efficience, il faut définir ce qu'est un monde où l'épargne est « bien allouée » (croissance, répartition des richesses, limites écologiques).</p>
+        </div>
+
+        <div class="section">
+            <h2>III. Le cadre théorique : La vision néoclassique</h2>
+            <p><span class="highlight-text">L'objectif suprême :</span> La maximisation de l'utilité (le bonheur total) de la société.</p>
+            <p><span class="highlight-text">La gestion de la rareté :</span> Le marché doit allouer des ressources rares (travail et capital) pour satisfaire les préférences des agents.</p>
+            <h3>Les hypothèses de base :</h3>
+            <ul>
+                <li><span class="highlight-text">Préférences exogènes :</span> Les goûts sont innés et non influencés par la publicité.</li>
+                <li><span class="highlight-text">Rationalité instrumentale :</span> Les agents font des choix optimaux pour leur bonheur.</li>
+                <li><span class="highlight-text">Information totale :</span> Les agents possèdent toute la connaissance de l'humanité pour décider.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>IV. Le mécanisme du marché : La quête de l'équilibre</h2>
+            <p><span class="highlight-text">La rencontre de l'offre et de la demande :</span> C'est l'outil qui gère la rareté.</p>
+            <h3>Pourquoi ça « marcherait » (en théorie) :</h3>
+            <ul>
+                <li><span class="highlight-text">Rendements décroissants :</span> Le bonheur tiré d'un objet diminue avec la quantité, ce qui permet de tracer des courbes.</li>
+                <li><span class="highlight-text">Concurrence pure et parfaite :</span> Aucun agent n'est assez grand pour modifier les prix à lui seul.</li>
+                <li><span class="highlight-text">L'équilibre général :</span> Un état mathématique (Pareto optimum) où toutes les ressources sont utilisées et le bonheur est maximal.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>V. La confrontation au réel : Pourquoi la théorie vacille</h2>
+            <p><span class="highlight-text">Le facteur humain :</span> Daniel Kahneman a montré que les agents ne sont pas rationnels et maîtrisent mal les probabilités.</p>
+            <h3>La spécificité des marchés financiers :</h3>
+            <ul>
+                <li><span class="highlight-text">La monnaie n'est pas rare :</span> Elle peut être créée par simple pression sur un bouton, contrairement au capital physique.</li>
+                <li><span class="highlight-text">Le rôle du marché secondaire :</span> C'est le prix de « l'occasion » entre financiers qui dicte le prix du neuf, et non l'utilité réelle.</li>
+                <li><span class="highlight-text">L'absence de courbes stables :</span> Sur un marché financier, une hausse de prix peut attirer plus d'acheteurs (opportunisme) au lieu de les repousser, rendant l'équilibre impossible à tracer.</li>
+            </ul>
+        </div>
+
+        <div class="section" style="text-align: center; border-left: none; border-top: 4px solid var(--highlight);">
+            <h2 style="border-bottom: none;">VI. Conclusion</h2>
+            <p style="font-style: italic;">L'efficience des marchés financiers reste une notion complexe et débattue. Si la théorie offre un cadre intellectuel séduisant, la réalité humaine et financière démontre souvent les limites de ces modèles parfaits.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Création de particules pour la page de garde
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Position aléatoire
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+
+                // Durée et délai d'animation aléatoires
+                const duration = Math.random() * 5 + 3; // 3s à 8s
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Animation de transition
+        function enterSite() {
+            const cover = document.getElementById('cover-page');
+            const content = document.getElementById('content-page');
+
+            // Effet de disparition de la page de garde
+            cover.style.transform = 'translateY(-100vh)';
+            cover.style.opacity = '0';
+
+            // Après l'animation, cacher la couverture et afficher le contenu
+            setTimeout(() => {
+                cover.style.display = 'none';
+                content.classList.add('visible');
+                window.scrollTo(0, 0); // Remonter en haut
+            }, 800);
+        }
+
+        // Initialisation
+        window.onload = createParticles;
+    </script>
+</body>
+</html>
