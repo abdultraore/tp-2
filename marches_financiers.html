@@ -24,6 +24,50 @@
             color: var(--text-color);
             overflow-x: hidden;
             scroll-behavior: smooth;
+            transition: background-color 0.8s ease, color 0.8s ease;
+        }
+
+        /* Thème clair pour la page de contenu */
+        body.light-mode {
+            background-color: #fdfdf8; /* Blanc cassé tirant très légèrement sur le jaune */
+            color: #333333;
+        }
+
+        body.light-mode .section {
+            background: #ffffff;
+            border-left: 4px solid #c99800;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        body.light-mode .section:hover {
+            background: #fffef2; /* Léger jaune au survol */
+        }
+
+        body.light-mode h2 {
+            color: #c99800; /* Jaune/or plus foncé pour lisibilité */
+            border-bottom: 1px solid rgba(201, 152, 0, 0.3);
+        }
+
+        body.light-mode h3 {
+            color: #111111;
+        }
+
+        body.light-mode p, body.light-mode li {
+            color: #444444;
+        }
+
+        body.light-mode .highlight-text {
+            color: #c99800;
+        }
+
+        body.light-mode::-webkit-scrollbar-track {
+            background: #fdfdf8;
+        }
+        body.light-mode::-webkit-scrollbar-thumb {
+            background: #e6c229;
+        }
+        body.light-mode::-webkit-scrollbar-thumb:hover {
+            background: #c99800;
         }
 
         /* Page de garde */
@@ -316,6 +360,7 @@
             // Après l'animation, cacher la couverture et afficher le contenu
             setTimeout(() => {
                 cover.style.display = 'none';
+                document.body.classList.add('light-mode'); // Passer au thème clair
                 content.classList.add('visible');
                 window.scrollTo(0, 0); // Remonter en haut
             }, 800);
