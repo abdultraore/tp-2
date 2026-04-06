@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Emploi du Temps - Semaine Intensive</title>
+    <style>
+        :root {
+            --bg-color: #FAFAFA;
+            --container-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-muted: #6B7280;
+            --accent-yellow: #FDE047;
+            --accent-yellow-dark: #EAB308;
+            --border-color: #E5E7EB;
+
+            /* Category colors */
+            --cat-travail-bg: #E0F2FE;
+            --cat-travail-text: #0369A1;
+            --cat-cours-bg: #F3E8FF;
+            --cat-cours-text: #7E22CE;
+            --cat-pause-bg: #FEF9C3;
+            --cat-pause-text: #A16207;
+            --cat-sport-bg: #DCFCE7;
+            --cat-sport-text: #15803D;
+            --cat-entretien-bg: #FEE2E2;
+            --cat-entretien-text: #B91C1C;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .max-w-4xl {
+            max-width: 56rem;
+            margin: 0 auto;
+        }
+
+        /* Header & Dashboard */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            background: var(--container-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 4px solid var(--accent-yellow);
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 1.5rem 0;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background-color: var(--border-color);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--accent-yellow-dark);
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Days Navigation */
+        .days-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .days-nav::-webkit-scrollbar {
+            display: none; /* Safari and Chrome */
+        }
+
+        .day-btn {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .day-btn:hover {
+            border-color: var(--accent-yellow);
+            color: var(--text-main);
+        }
+
+        .day-btn.active {
+            background-color: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            color: #422006;
+            box-shadow: 0 4px 6px -1px rgba(253, 224, 71, 0.4);
+        }
+
+        /* Schedule Content */
+        .schedule-container {
+            background: var(--container-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .day-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            background-color: var(--container-bg);
+        }
+
+        .task-item:hover {
+            border-color: #D1D5DB;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            background-color: #F9FAFB;
+        }
+
+        .task-item.completed .task-desc {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .checkbox-wrapper {
+            margin-right: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #D1D5DB;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            background-color: white;
+        }
+
+        .custom-checkbox:checked {
+            background-color: var(--accent-yellow-dark);
+            border-color: var(--accent-yellow-dark);
+        }
+
+        .custom-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 3px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .task-content {
+            flex-grow: 1;
+        }
+
+        .task-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-time {
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .task-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-travail { background-color: var(--cat-travail-bg); color: var(--cat-travail-text); }
+        .tag-cours { background-color: var(--cat-cours-bg); color: var(--cat-cours-text); }
+        .tag-pause { background-color: var(--cat-pause-bg); color: var(--cat-pause-text); }
+        .tag-sport { background-color: var(--cat-sport-bg); color: var(--cat-sport-text); }
+        .tag-entretien { background-color: var(--cat-entretien-bg); color: var(--cat-entretien-text); }
+
+        .task-desc {
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @media (max-width: 600px) {
+            .task-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .dashboard { padding: 1.5rem 1rem; }
+            .schedule-container { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-4xl">
+        <div class="header">
+            <h1>🗓️ Mon Emploi du Temps</h1>
+            <p>15 heures de productivité quotidienne (10-11 Avril)</p>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Progression de la Semaine</h2>
+            <div class="progress-container">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-stats">
+                    <span id="progressText">0%</span>
+                    <span id="taskCountText">0 / 0 tâches</span>
+                </div>
+            </div>
+            <button onclick="resetProgress()" style="margin-top: 1rem; background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-size: 0.875rem;">Réinitialiser la progression</button>
+        </div>
+
+        <!-- Days Navigation -->
+        <div class="days-nav" id="daysNav">
+            <!-- Buttons injected by JS -->
+        </div>
+
+        <!-- Schedule Container -->
+        <div class="schedule-container">
+            <h2 class="day-title" id="currentDayTitle">Chargement...</h2>
+            <div class="task-list" id="taskList">
+                <!-- Tasks injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scheduleData = [
+            {
+                id: "lundi",
+                name: "Lundi 06",
+                title: "LUNDI 06 AVRIL (Férié)",
+                tasks: [
+                    { id: "l1", time: "10h00 - 12h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1." },
+                    { id: "l2", time: "12h00 - 12h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "l3", time: "12h15 - 14h15", type: "travail", desc: "Travail (2h) - Compte rendu d'article (1h) + Modèle de durée (1h)." },
+                    { id: "l4", time: "14h15 - 15h15", type: "pause", desc: "Grande Pause / Déjeuner (1h - Après 4h cumulées)." },
+                    { id: "l5", time: "15h15 - 17h15", type: "travail", desc: "Travail (2h) - Projet Marchés (45 min) + Projet GT (45 min) + Projet Modélisation (30 min)." },
+                    { id: "l6", time: "17h15 - 17h30", type: "pause", desc: "Pause (15 min)." },
+                    { id: "l7", time: "17h30 - 19h00", type: "travail", desc: "Travail (1h30) - Préparation Forvis Mazars (1h30)." },
+                    { id: "l8", time: "19h00 - 20h00", type: "sport", desc: "Sport (1h) (Pas de cours, donc 19h)." },
+                    { id: "l9", time: "20h00 - 20h30", type: "travail", desc: "Travail (30 min) - Démarrage TP1 (30 min)." },
+                    { id: "l10", time: "20h30 - 20h45", type: "pause", desc: "Pause (15 min)." },
+                    { id: "l11", time: "20h45 - 22h45", type: "travail", desc: "Travail (2h) - Finance Perso / Stats / Excel." },
+                    { id: "l12", time: "22h45 - 23h30", type: "pause", desc: "Grande Pause / Dîner détente (45 min) et Coucher." }
+                ]
+            },
+            {
+                id: "mardi",
+                name: "Mardi 07",
+                title: "MARDI 07 AVRIL",
+                tasks: [
+                    { id: "m1", time: "05h00 - 07h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1 (1h) + Projet GT (30 min) + Projet Marchés (30 min)." },
+                    { id: "m2", time: "07h00 - 07h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "m3", time: "07h15 - 09h15", type: "travail", desc: "Travail (2h) - Forvis Mazars (1h30) + Projet Modélisation (30 min)." },
+                    { id: "m4", time: "09h15 - 09h30", type: "pause", desc: "Pause (15 min)." },
+                    { id: "m5", time: "09h30 - 10h15", type: "travail", desc: "Travail (45 min) - Modèle de durée (45 min)." },
+                    { id: "m6", time: "10h15 - 12h15", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "m7", time: "12h15 - 13h15", type: "pause", desc: "Grande Pause / Déjeuner (1h)." },
+                    { id: "m8", time: "13h15 - 13h30", type: "travail", desc: "Travail (15 min) - Fin Modèle de durée (15 min)." },
+                    { id: "m9", time: "13h30 - 15h30", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "m10", time: "15h30 - 15h45", type: "pause", desc: "Pause (15 min)." },
+                    { id: "m11", time: "15h45 - 17h30", type: "cours", desc: "Cours (1h45) : MOD. COURBES TX. (FIN)." },
+                    { id: "m12", time: "17h30 - 19h30", type: "cours", desc: "Cours (2h) : ANA. FIN. ET DIAGNOSTIC (FIN)." },
+                    { id: "m13", time: "19h30 - 20h00", type: "pause", desc: "Pause / Trajet (30 min)." },
+                    { id: "m14", time: "20h00 - 21h00", type: "sport", desc: "Sport (1h)." },
+                    { id: "m15", time: "21h00 - 23h15", type: "travail", desc: "Travail (2h15) - Avancement TP1 (1h30) + Pratique Excel (45 min)." },
+                    { id: "m16", time: "23h15 - 23h30", type: "pause", desc: "Pause détente (15 min) et Coucher." }
+                ]
+            },
+            {
+                id: "mercredi",
+                name: "Mercredi 08",
+                title: "MERCREDI 08 AVRIL",
+                tasks: [
+                    { id: "me1", time: "05h00 - 07h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1 (1h) + Forvis Mazars (1h)." },
+                    { id: "me2", time: "07h00 - 07h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "me3", time: "07h15 - 08h00", type: "travail", desc: "Travail (45 min) - Fin Forvis Mazars (30 min) + Projet Marchés (15 min)." },
+                    { id: "me4", time: "08h00 - 10h00", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "me5", time: "10h00 - 10h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "me6", time: "10h15 - 12h15", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "me7", time: "12h15 - 13h00", type: "pause", desc: "Grande Pause / Déjeuner (45 min)." },
+                    { id: "me8", time: "13h00 - 13h30", type: "travail", desc: "Travail (30 min) - Projet GT (30 min)." },
+                    { id: "me9", time: "13h30 - 15h30", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "me10", time: "15h30 - 15h45", type: "pause", desc: "Pause (15 min)." },
+                    { id: "me11", time: "15h45 - 17h45", type: "travail", desc: "Travail (2h) - Modèle de durée (1h) + Finalisation TP1 (1h)." },
+                    { id: "me12", time: "17h45 - 18h30", type: "pause", desc: "Grande Pause (45 min)." },
+                    { id: "me13", time: "18h30 - 19h00", type: "travail", desc: "Travail (30 min) - Projet Modélisation (30 min)." },
+                    { id: "me14", time: "19h00 - 20h00", type: "sport", desc: "Sport (1h)." },
+                    { id: "me15", time: "20h00 - 22h00", type: "travail", desc: "Travail (2h) - Excel / Stats / Finance Perso." },
+                    { id: "me16", time: "22h00 - 22h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "me17", time: "22h15 - 23h30", type: "travail", desc: "Travail (1h15) - Anticipation J-2/J-1 (1h) + Termes éco (15 min)." }
+                ]
+            },
+            {
+                id: "jeudi",
+                name: "Jeudi 09",
+                title: "JEUDI 09 AVRIL",
+                tasks: [
+                    { id: "j1", time: "05h00 - 07h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1 (1h) + Forvis Mazars (1h)." },
+                    { id: "j2", time: "07h00 - 07h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "j3", time: "07h15 - 08h00", type: "travail", desc: "Travail (45 min) - Fin Forvis Mazars (30 min) + Projet Modélisation (15 min)." },
+                    { id: "j4", time: "08h00 - 10h00", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "j5", time: "10h00 - 10h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "j6", time: "10h15 - 12h15", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "j7", time: "12h15 - 13h15", type: "pause", desc: "Grande Pause / Déjeuner (1h)." },
+                    { id: "j8", time: "13h15 - 14h00", type: "travail", desc: "Travail (45 min) - Modèle de durée (45 min)." },
+                    { id: "j9", time: "14h00 - 16h00", type: "cours", desc: "Cours (2h) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "j10", time: "16h00 - 16h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "j11", time: "16h15 - 18h00", type: "cours", desc: "Cours (1h45) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "j12", time: "18h00 - 19h30", type: "cours", desc: "Cours (1h30) : ANA. FIN. ET DIAGNOSTIC (FIN)." },
+                    { id: "j13", time: "19h30 - 20h00", type: "pause", desc: "Pause / Trajet (30 min)." },
+                    { id: "j14", time: "20h00 - 21h00", type: "sport", desc: "Sport (1h)." },
+                    { id: "j15", time: "21h00 - 23h15", type: "travail", desc: "Travail (2h15) - Fin Modèle durée (15 min) + Projet GT (30 min) + Projet Marchés (30 min) + Démarrage TP2 (1h)." },
+                    { id: "j16", time: "23h15 - 23h30", type: "pause", desc: "Pause détente (15 min) et Coucher." }
+                ]
+            },
+            {
+                id: "vendredi",
+                name: "Vendredi 10",
+                title: "VENDREDI 10 AVRIL",
+                tasks: [
+                    { id: "v1", time: "05h00 - 07h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1 (1h) + TP2 (1h)." },
+                    { id: "v2", time: "07h00 - 07h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "v3", time: "07h15 - 08h00", type: "travail", desc: "Travail (45 min) - Finalisation TP2 à rendre (45 min)." },
+                    { id: "v4", time: "08h00 - 10h00", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "v5", time: "10h00 - 10h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "v6", time: "10h15 - 12h15", type: "cours", desc: "Cours (2h) : MOD. COURBES TX. (FIN)." },
+                    { id: "v7", time: "12h15 - 13h15", type: "pause", desc: "Grande Pause / Déjeuner (1h)." },
+                    { id: "v8", time: "13h15 - 14h00", type: "travail", desc: "Travail (45 min) - Modèle de durée (45 min)." },
+                    { id: "v9", time: "14h00 - 16h00", type: "cours", desc: "Cours (2h) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "v10", time: "16h00 - 16h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "v11", time: "16h15 - 18h00", type: "cours", desc: "Cours (1h45) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "v12", time: "18h00 - 18h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "v13", time: "18h15 - 19h00", type: "travail", desc: "Travail (45 min) - Fin Modèle durée (15 min) + Forvis Mazars (30 min)." },
+                    { id: "v14", time: "19h00 - 20h00", type: "sport", desc: "Sport (1h)." },
+                    { id: "v15", time: "20h00 - 22h00", type: "travail", desc: "Travail (2h) - Fin Forvis Mazars (1h) + Projet Marchés (30 min) + Projet GT (30 min)." },
+                    { id: "v16", time: "22h00 - 22h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "v17", time: "22h15 - 23h15", type: "travail", desc: "Travail (1h) - Projet Modélisation (45 min) + Excel (15 min)." },
+                    { id: "v18", time: "23h15 - 23h30", type: "pause", desc: "Pause détente (15 min) et Coucher." }
+                ]
+            },
+            {
+                id: "samedi",
+                name: "Samedi 11",
+                title: "SAMEDI 11 AVRIL",
+                tasks: [
+                    { id: "s1", time: "05h00 - 07h00", type: "travail", desc: "Travail (2h) - Anticipation J-2 & J-1 (1h) + Modèle de durée (1h)." },
+                    { id: "s2", time: "07h00 - 07h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "s3", time: "07h15 - 08h00", type: "travail", desc: "Travail (45 min) - Projet Marchés (Finalisation : 45 min)." },
+                    { id: "s4", time: "08h00 - 10h00", type: "cours", desc: "Cours (2h) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "s5", time: "10h00 - 10h15", type: "pause", desc: "Pause (15 min)." },
+                    { id: "s6", time: "10h15 - 12h15", type: "cours", desc: "Cours (2h) : GEST. ACT./PAS. (ACT, FIN)." },
+                    { id: "s7", time: "12h15 - 13h00", type: "pause", desc: "Grande Pause / Déjeuner (45 min)." },
+                    { id: "s8", time: "13h00 - 13h30", type: "travail", desc: "Travail (30 min) - Projet GT (Finalisation : 30 min)." },
+                    { id: "s9", time: "13h30 - 15h30", type: "cours", desc: "Cours (2h) : GESTION PORTEF. (ACT, FIN)." },
+                    { id: "s10", time: "15h30 - 15h45", type: "pause", desc: "Pause (15 min)." },
+                    { id: "s11", time: "15h45 - 17h30", type: "cours", desc: "Cours (1h45) : GESTION PORTEF. (ACT, FIN)." },
+                    { id: "s12", time: "17h30 - 19h00", type: "entretien", desc: "ENTRETIEN FORVIS MAZARS (1h30)." },
+                    { id: "s13", time: "19h00 - 20h00", type: "sport", desc: "Sport (1h)." },
+                    { id: "s14", time: "20h00 - 20h45", type: "pause", desc: "Grande Pause (45 min)." },
+                    { id: "s15", time: "20h45 - 22h45", type: "travail", desc: "Travail (2h) - Projet Modélisation (1h) + Répétition orale finale GT (1h)." },
+                    { id: "s16", time: "22h45 - 23h00", type: "pause", desc: "Pause (15 min)." },
+                    { id: "s17", time: "23h00 - 23h30", type: "travail", desc: "Travail (30 min) - Bilan de la semaine sur Excel." }
+                ]
+            }
+        ];
+
+        // State
+        let currentDayId = "lundi";
+        let completedTasks = JSON.parse(localStorage.getItem('scheduleProgress')) || {};
+
+        // DOM Elements
+        const daysNav = document.getElementById('daysNav');
+        const taskList = document.getElementById('taskList');
+        const currentDayTitle = document.getElementById('currentDayTitle');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const taskCountText = document.getElementById('taskCountText');
+
+        // Init
+        function init() {
+            renderNav();
+            renderDay(currentDayId);
+            updateDashboard();
+        }
+
+        // Render Navigation
+        function renderNav() {
+            daysNav.innerHTML = '';
+            scheduleData.forEach(day => {
+                const btn = document.createElement('button');
+                btn.className = `day-btn ${day.id === currentDayId ? 'active' : ''}`;
+                btn.innerText = day.name;
+                btn.onclick = () => {
+                    currentDayId = day.id;
+                    renderNav();
+                    renderDay(day.id);
+                };
+                daysNav.appendChild(btn);
+            });
+        }
+
+        // Helper to get tag label
+        function getTagLabel(type) {
+            const labels = {
+                'travail': 'Travail',
+                'cours': 'Cours',
+                'pause': 'Pause',
+                'sport': 'Sport',
+                'entretien': 'Entretien'
+            };
+            return labels[type] || type;
+        }
+
+        // Render tasks for selected day
+        function renderDay(dayId) {
+            const dayData = scheduleData.find(d => d.id === dayId);
+            currentDayTitle.innerText = dayData.title;
+
+            taskList.innerHTML = '';
+            dayData.tasks.forEach((task, index) => {
+                const isCompleted = !!completedTasks[task.id];
+
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item fade-in ${isCompleted ? 'completed' : ''}`;
+                taskEl.style.animationDelay = `${index * 0.03}s`;
+
+                taskEl.innerHTML = `
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="custom-checkbox" id="${task.id}"
+                            ${isCompleted ? 'checked' : ''}
+                            onchange="toggleTask('${task.id}')">
+                    </div>
+                    <div class="task-content">
+                        <div class="task-header">
+                            <span class="task-time">${task.time}</span>
+                            <span class="task-tag tag-${task.type}">${getTagLabel(task.type)}</span>
+                        </div>
+                        <div class="task-desc">${task.desc}</div>
+                    </div>
+                `;
+
+                // Allow clicking anywhere on the task to toggle
+                taskEl.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const checkbox = document.getElementById(task.id);
+                        checkbox.checked = !checkbox.checked;
+                        toggleTask(task.id);
+                    }
+                });
+
+                taskList.appendChild(taskEl);
+            });
+        }
+
+        // Toggle task completion
+        function toggleTask(taskId) {
+            const checkbox = document.getElementById(taskId);
+            if (checkbox.checked) {
+                completedTasks[taskId] = true;
+            } else {
+                delete completedTasks[taskId];
+            }
+
+            // Save to localStorage
+            localStorage.setItem('scheduleProgress', JSON.stringify(completedTasks));
+
+            // Re-render visually without redrawing entire list
+            const taskItem = checkbox.closest('.task-item');
+            if (checkbox.checked) {
+                taskItem.classList.add('completed');
+            } else {
+                taskItem.classList.remove('completed');
+            }
+
+            updateDashboard();
+        }
+
+        // Update Progress Bar
+        function updateDashboard() {
+            let totalTasks = 0;
+            scheduleData.forEach(day => {
+                totalTasks += day.tasks.length;
+            });
+
+            const completedCount = Object.keys(completedTasks).length;
+            const percentage = totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
+
+            progressBar.style.width = `${percentage}%`;
+            progressText.innerText = `${percentage}% Complété`;
+            taskCountText.innerText = `${completedCount} / ${totalTasks} tâches`;
+        }
+
+        // Reset
+        function resetProgress() {
+            if(confirm('Voulez-vous vraiment réinitialiser toute votre progression ?')) {
+                completedTasks = {};
+                localStorage.removeItem('scheduleProgress');
+                renderDay(currentDayId);
+                updateDashboard();
+            }
+        }
+
+        // Run
+        init();
+    </script>
+</body>
+</html>
